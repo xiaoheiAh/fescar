@@ -22,6 +22,13 @@ package com.alibaba.fescar.common.thread;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.MessageFormat;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
+import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
+import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 /**
@@ -39,5 +46,25 @@ public class NamedThreadFactoryTest {
         System.out.println(testNameThread.toString());
         assertThat(testNameThread.getName()).startsWith("testNameThread");
         assertThat(testNameThread.isDaemon()).isTrue();
+    }
+
+
+    @Test
+    public void testThread() {
+        ThreadPoolExecutor discard = new ThreadPoolExecutor(2, 4, 100, TimeUnit.SECONDS, new LinkedBlockingQueue<>(10),
+            new DiscardPolicy());
+        for (int i = 0; i < 10; i++) {
+            discard.execute(() -> {
+                try {
+                    System.out.println(Thread.currentThread().getName());
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            System.out.println(MessageFormat.format("queue size:{0},active count:{1},core pool size:{2},task count:{3},queue remaining capacity:{4}",
+                discard.getQueue().size(),discard.getActiveCount(),discard.getCorePoolSize(),discard.getTaskCount(),discard.getQueue().remainingCapacity()));
+        }
     }
 }
