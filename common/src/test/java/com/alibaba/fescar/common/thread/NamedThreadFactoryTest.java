@@ -18,7 +18,10 @@ package com.alibaba.fescar.common.thread;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.TimeUnit;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Otis.z
@@ -26,19 +29,22 @@ import org.junit.Test;
  */
 public class NamedThreadFactoryTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NamedThreadFactoryTest.class);
+    private static final String PREFIX = "testNameThread";
+
     @Test
     public void testNewThread() {
-        NamedThreadFactory namedThreadFactory = new NamedThreadFactory("testNameThread", 5);
+        NamedThreadFactory namedThreadFactory = new NamedThreadFactory(PREFIX, 5);
 
         Thread testNameThread = namedThreadFactory
             .newThread(() -> {
                 try {
-                    Thread.sleep(1000);
+                    TimeUnit.SECONDS.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOGGER.error("execute error",e);
                 }
             });
-        assertThat(testNameThread.getName()).startsWith("testNameThread");
+        assertThat(testNameThread.getName()).startsWith(PREFIX);
         assertThat(testNameThread.isDaemon()).isTrue();
     }
 }
