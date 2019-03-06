@@ -41,7 +41,7 @@ public class NamedThreadFactoryTest {
                 try {
                     TimeUnit.SECONDS.sleep(1000);
                 } catch (InterruptedException e) {
-                    LOGGER.error("execute error",e);
+                    LOGGER.error("execute error", e);
                 }
             });
         assertThat(testNameThread.getName()).startsWith(PREFIX);
